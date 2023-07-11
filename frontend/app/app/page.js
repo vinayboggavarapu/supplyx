@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -6,9 +7,18 @@ export default function Home() {
       <nav className="w-11/12 border-y-2 border-lime-100 py-6 flex flex-col lg:flex-row lg:justify-between  items-center text-center gap-6 ">
         <span>SupplyX</span>
         <ul className="gap-6 flex flex-col lg:flex-row">
-          <li>Home</li>
-          <li>Manufacturers</li>
-          <li>Customers</li>
+          <Link href="/" className="cursor-pointer">
+            Home
+          </Link>
+          <Link href="/manufacturers" className="cursor-pointer">
+            Manufacturers
+          </Link>
+          <Link href="/users" className="cursor-pointer">
+            Customers
+          </Link>
+          <Link href="/retailers" className="cursor-pointer">
+            Retailers
+          </Link>
         </ul>
       </nav>
       <hero className="w-11/12 pt-12">
@@ -24,14 +34,14 @@ export default function Home() {
       <div className="w-full pt-14 lg:pb-6 1 grayscale">
         <Image
           src="/img1.png"
-          alt="hi"
+          alt="product warehouse"
           layout="responsive"
           width={0}
           height={0}
           className="h-1/4 overflow-clip bg-cover"
         />
       </div>
-      <div className="w-11/12  lg:flex lg:flex-col lg:w-8/12 text-left lg:gap-10 lg:py-20">
+      <div className="w-11/12 lg:flex lg:flex-col lg:w-8/12 text-left lg:gap-10 lg:py-20">
         <h2 className="font-semibold text-[6dvw] lg:text-[3.2dvw] lg:font-bold lg:w-9/12 text-lime-300 opacity-50 pb-3">
           Two Categories, One Platform
         </h2>
