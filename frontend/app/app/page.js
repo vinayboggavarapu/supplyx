@@ -3,8 +3,8 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center overflow-hidden bg-black py-12 text-[#CDE77F]">
-      <nav className="w-11/12 border-y-2 border-[#ccec69] py-6 flex flex-col lg:flex-row lg:justify-between  items-center text-center gap-6 ">
+    <main className="flex min-h-screen flex-col items-center overflow-hidden bg-black py-12 text-[#dff896]">
+      <nav className="w-11/12 border-y-2 border-[#dff896] py-6 flex flex-col lg:flex-row lg:justify-between  items-center text-center gap-6 ">
         <span>SupplyX</span>
         <ul className="gap-6 flex flex-col lg:flex-row">
           <Link href="/" className="cursor-pointer">
@@ -46,7 +46,7 @@ export default function Home() {
         
       </div>
       <div className="w-11/12 lg:flex relative lg:flex-col lg:w-8/12 text-left lg:gap-10 lg:py-20">
-        <h2 className="z-10 font-semibold text-[6dvw] lg:text-[3.2dvw] lg:font-bold lg:w-9/12 text-[#CDE77F] pb-3">
+        <h2 className="z-10 font-semibold text-[6dvw] lg:text-[3.2dvw] lg:font-bold lg:w-9/12 text-[#cbff2d] opacity-40 pb-3">
           Two Categories, One Platform
         </h2>
         <p className="z-10 text-slate-50 lg:w-4/6 lg:text-[1.5rem] lg:font-medium">
@@ -111,7 +111,7 @@ export default function Home() {
             width={100}
             height={100}
             quality={100}
-            className="lg:mt-5 grayscale w-full h-52 object-cover rounded-lg self-center m-auto"
+            className="lg:mt-5 grayscale w-full h-52 object-cover rounded-xl self-center m-auto"
           />
         </div>
         <div className="z-10 card1 w-full bg-[#0d0d0d] px-5 py-4 rounded-2xl flex flex-col gap-3">
@@ -122,7 +122,7 @@ export default function Home() {
             width={100}
             height={100}
             quality={100}
-            className="lg:mt-5 grayscale w-full h-52 object-cover rounded-lg self-center m-auto"
+            className="lg:mt-5 grayscale w-full h-52 object-cover rounded-xl self-center m-auto"
           />
         </div>
         <div className="z-10 card1 w-full bg-[#0d0d0d] px-5 py-4 rounded-2xl flex flex-col gap-3">
@@ -133,7 +133,7 @@ export default function Home() {
             width={100}
             height={100}
             quality={100}
-            className="lg:mt-5 grayscale w-full h-52 object-cover rounded-lg self-center m-auto"
+            className="lg:mt-5 grayscale w-full h-52 object-cover rounded-xl self-center m-auto"
           />
         </div>
         <div className="z-10 card1 w-full bg-[#0d0d0d] px-5 py-4 rounded-2xl flex flex-col gap-3 lg:col-span-2">
@@ -144,7 +144,7 @@ export default function Home() {
             width={100}
             height={100}
             quality={100}
-            className="lg:mt-5 grayscale w-full h-52 object-cover rounded-lg self-center m-auto"
+            className="lg:mt-5 grayscale w-full h-52 object-cover rounded-xl self-center m-auto"
           />
         </div>
         <div className="lg:z-0 lg:w-[35rem] lg:self-start  lg:h-[15rem] lg:-left-32 lg:top-10 lg:absolute lg:border lg:rotate-45 lg:rounded-[100%] lg:border-zinc-700	 lg:p-10"></div>
@@ -156,7 +156,7 @@ export default function Home() {
           Don’t wait another minute! Dive into the world of SupplyX and
           revolutionize your supply chain experience. Join us now!
         </p>
-        <div className="w-full lg:w-fit bg-[#704e2e] text-slate-50 text-sm px-4 py-2 rounded-lg">
+        <div className="w-full lg:w-fit bg-[#704e2e] text-slate-50 text-sm px-6 py-2 rounded-xl">
           Sign up
         </div>
         <div className="lg:z-0 lg:w-[22rem] lg:absolute lg:h-52 lg:border lg:self-start lg:left-16 lg:rotate-[30deg] lg:rounded-[100%] lg:border-zinc-700	 lg:p-10"></div>
