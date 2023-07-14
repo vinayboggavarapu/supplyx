@@ -1,26 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import LocomotiveScroll from 'locomotive-scroll';
-import React, { useRef,useEffect } from "react";
 
 export default function Home() {
   
-
-  const ref = useRef(null);
-
-  useEffect(()=>{
-    let locoScroll;
-    locoScroll = new LocomotiveScroll({
-    el: ref.current,
-    smooth: true,
-    });
-    new ResizeObserver(() => locoScroll.update()).observe(
-      ref.current
-    );
-    },[]);
-
   return (
-    <main ref={ref} className="flex min-h-screen flex-col items-center overflow-hidden bg-black py-12 text-[#dff896]">
+    <main className="flex min-h-screen flex-col items-center overflow-hidden bg-black py-12 text-[#dff896]">
       <nav className="w-11/12 border-y-2 border-[#dff896] py-6 flex flex-col lg:flex-row lg:justify-between  items-center text-center gap-6 ">
         <span>SupplyX</span>
         <ul className="gap-6 flex flex-col lg:flex-row">
