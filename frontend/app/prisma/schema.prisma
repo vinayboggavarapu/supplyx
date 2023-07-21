@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Orders {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  address       String  @unique
+  transactionId String
+  orderId       String
+  productName   String
+  isPriority    Boolean @default(false)
+}
+
+// Address is an embedded document
+type Address {
+  street String
+  city   String
+  state  String
+  zip    String
+}

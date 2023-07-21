@@ -25,7 +25,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Accordion } from "@radix-ui/react-accordion";
 import {
   AccordionContent,
@@ -33,46 +33,74 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const preorders = [
-  {
-    name: "UserVintu",
-    address: "0x123456789",
-    tx: "0xxxcvvvvvvfff",
-    orderid: "KVSP123",
-  },
-  {
-    name: "UserVintu",
-    address: "0x123456789",
-    tx: "0xxxcvvvvvvfff",
-    orderid: "KVSP123",
-  },
-  {
-    name: "UserVintu",
-    address: "0x123456789",
-    tx: "0xxxcvvvvvvfff",
-    orderid: "KVSP123",
-  },
-  {
-    name: "UserVintu",
-    address: "0x123456789",
-    tx: "0xxxcvvvvvvfff",
-    orderid: "KVSP123",
-  },
-  {
-    name: "UserVintu",
-    address: "0x123456789",
-    tx: "0xxxcvvvvvvfff",
-    orderid: "KVSP123",
-  },
-  {
-    name: "UserVintu",
-    address: "0x123456789",
-    tx: "0xxxcvvvvvvfff",
-    orderid: "KVSP123",
-  },
-];
+// const preorders = [
+//   {
+//     name: "UserVintu",
+//     address: "0x123456789",
+//     tx: "0xxxcvvvvvvfff",
+//     orderid: "KVSP123",
+//   },
+//   {
+//     name: "UserVintu",
+//     address: "0x123456789",
+//     tx: "0xxxcvvvvvvfff",
+//     orderid: "KVSP123",
+//   },
+//   {
+//     name: "UserVintu",
+//     address: "0x123456789",
+//     tx: "0xxxcvvvvvvfff",
+//     orderid: "KVSP123",
+//   },
+//   {
+//     name: "UserVintu",
+//     address: "0x123456789",
+//     tx: "0xxxcvvvvvvfff",
+//     orderid: "KVSP123",
+//   },
+//   {
+//     name: "UserVintu",
+//     address: "0x123456789",
+//     tx: "0xxxcvvvvvvfff",
+//     orderid: "KVSP123",
+//   },
+//   {
+//     name: "UserVintu",
+//     address: "0x123456789",
+//     tx: "0xxxcvvvvvvfff",
+//     orderid: "KVSP123",
+//   },
+// ];
 
 const Page = () => {
+  const [preorders, setPreorders] = useState([]);
+  const countDownTimeInMinutes = 2;
+  const [time, setTime] = useState(
+    Date.now() + countDownTimeInMinutes * 60 * 1000
+  );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime((previousTime) => previousTime - 1000);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    const getData = async () => {
+      const ordersData = await fetch("/api/details");
+      const orders = await ordersData.json();
+      setPreorders(orders);
+    };
+    getData();
+  }, []);
+
+  const minutes = Math.max(Math.floor((time - Date.now()) / (1000 * 60)), 0);
+  const seconds = Math.max(Math.floor((time - Date.now()) / 1000) % 60, 0);
+
   return (
     <Layout header={"Manufacturer"}>
       <div className="p-7">
@@ -134,7 +162,7 @@ const Page = () => {
                       <span className="text-[#f9f4b4]">
                         Timer to trigger bulk order :
                       </span>{" "}
-                      14 minutes 3 seconds
+                      {minutes} minute {seconds} seconds
                     </h2>
                   </AccordionContent>
                 </AccordionItem>
@@ -156,10 +184,10 @@ const Page = () => {
                     <TableCell className="font-medium">
                       {preorder.name}
                     </TableCell>
-                    <TableCell>{preorder.tx}</TableCell>
-                    <TableCell>{preorder.orderid}</TableCell>
+                    <TableCell>{preorder.address}</TableCell>
+                    <TableCell>{preorder.transactionId}</TableCell>
                     <TableCell className="text-right">
-                      {preorder.address}
+                      {preorder.orderId}
                     </TableCell>
                   </TableRow>
                 ))}
