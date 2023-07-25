@@ -1,34 +1,30 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SupplyX
 
-## Getting Started
+SupplyX is a decentralized application (dApp) that was developed during the Web3 Conf Goa Hack. It seamlessly integrates the workflow of manufacturers, retailers, and customers to ensure an efficient supply chain process on the blockchain. The application allows for the registration of manufacturers and retailers, facilitates the placement and updating of orders by customers, and handles requests from manufacturers to retailers for raw materials based on preorders and counts.
 
-First, run the development server:
+## Workflow
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+1. **Register**: Manufacturers and retailers must register on the platform.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Customer Orders**: Customers place orders and can update the priority of the order at their discretion.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+3. **Manufacturer-Retailer Interaction**: The manufacturer receives the order and forwards a request to the retailer for raw materials based on the preorder and count. The retailer then receives the order and ships the requested raw materials.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+4. **Order Confirmation and Payment Resolution**: Once the retailer has dispatched the raw material, the manufacturer will be notified. Upon confirmation of receiving the order by the manufacturer, the payment between the two parties is settled. The status of the user order will then be updated on the customer's dashboard, reflecting the current state of their order.
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+![Next.js](https://img.shields.io/badge/-Next.js-black?style=for-the-badge&logo=next.js)
+![Prisma](https://img.shields.io/badge/-Prisma-1A202C?style=for-the-badge&logo=prisma)
+![MongoDB](https://img.shields.io/badge/-MongoDB-green?style=for-the-badge&logo=mongodb)
+![Solidity](https://img.shields.io/badge/-Solidity-363636?style=for-the-badge&logo=solidity)
+![RainbowWallet](https://img.shields.io/badge/-RainbowWallet-2D3142?style=for-the-badge)
+![Wagmi](https://img.shields.io/badge/-Wagmi-663399?style=for-the-badge)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Demo
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+https://youtu.be/a4C9GSqaii0
 
-## Deploy on Vercel
+## Prod Website
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+https://supplyx.vercel.app/
