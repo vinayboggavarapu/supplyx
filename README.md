@@ -1,6 +1,8 @@
 # SupplyX
 
-SupplyX is a decentralized application (dApp) that was developed during the Web3 Conf Goa Hack. It seamlessly integrates the workflow of manufacturers, retailers, and customers to ensure an efficient supply chain process on the blockchain. The application allows for the registration of manufacturers and retailers, facilitates the placement and updating of orders by customers, and handles requests from manufacturers to retailers for raw materials based on preorders and counts.
+SupplyX - This was built during the Web3 Conf Goa Hack. It seamlessly integrates the workflow of manufacturers, retailers, and customers to ensure an efficient supply chain process on the blockchain. The application allows for the registration of manufacturers and retailers, facilitates the placement and updating of orders by customers, and handles requests from manufacturers to retailers for raw materials based on preorders and counts.
+
+This superior transparency fosters trust and engagement among the users. Meanwhile, manufacturers can leverage the technology to make insightful demand forecasts and order the raw materials prior to the orders received. thus ensuring smooth and uninterrupted production workflows.
 
 ## Workflow
 
