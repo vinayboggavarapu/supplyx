@@ -8,11 +8,6 @@ import { useEffect, useState } from "react";
 import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import abi, { contractAddress } from "@/Abi";
 
-export const metadata = {
-  title: "Users",
-  description: "SupplyX users page",
-};
-
 const Page = () => {
   const router = useRouter();
   console.log(router);

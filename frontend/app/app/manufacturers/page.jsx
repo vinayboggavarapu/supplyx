@@ -1,5 +1,7 @@
 "use client";
 import Layout from "@/components/pagelayout";
+import axios from "axios";
+
 import {
   Table,
   TableBody,
@@ -33,6 +35,8 @@ import abi, { contractAddress } from "@/Abi";
 import { watchContractEvent } from "@wagmi/core";
 import StateContext from "@/context/states";
 
+export const revalidate = 0;
+
 const Page = () => {
   const [preorders, setPreorders] = useState([]);
 
@@ -55,15 +59,6 @@ const Page = () => {
     args: [userAddress],
   });
 
-  useEffect(() => {
-    const getNotitications = async () => {
-      const response = await fetch(`/api/manufacturer?user=${userAddress}`);
-      const data = await response.json();
-      setNotification(data);
-    };
-    getNotitications();
-  }, []);
-
   const { data: getRetailers } = useContractRead({
     address: contractAddress,
     abi: abi,
@@ -85,34 +80,7 @@ const Page = () => {
 
   const [selectedRetailer, setSelectedRetailer] = useState("");
 
-  useEffect(() => {
-    const Orders = async () => {
-      const response = await fetch("/api/get-all-orders");
-      const data = await response.json();
-      setPreorders(data);
-    };
-    Orders();
-  }, []);
-
-  useEffect(() => {
-    const shopFloorOrders = async () => {
-      const response = await fetch("/api/get-shopfloor-orders");
-      const data = await response.json();
-      setShopFloorOrders(data);
-    };
-    shopFloorOrders();
-  }, []);
-
-  useEffect(() => {
-    const priorityOrders = async () => {
-      const response = await fetch("/api/get-priority-orders");
-      const data = await response.json();
-      setPriorityOrders(data);
-    };
-    priorityOrders();
-  }, []);
-
-  const { write: orderRawMaterial } = useContractWrite({
+  const { write: orderRawMaterial, isSuccess } = useContractWrite({
     address: contractAddress,
     abi: abi,
     functionName: "addPreOrderCountForRetailer",
@@ -123,6 +91,38 @@ const Page = () => {
     ],
     overrides: { from: userAddress },
   });
+
+  useEffect(() => {
+    const Orders = async () => {
+      const response = await axios.get("/api/get-all-orders");
+      setPreorders(response.data);
+    };
+    Orders();
+  }, [isSuccess]);
+
+  useEffect(() => {
+    const shopFloorOrders = async () => {
+      const response = await axios.get("/api/get-shopfloor-orders");
+      setShopFloorOrders(response.data);
+    };
+    shopFloorOrders();
+  }, [isSuccess]);
+
+  useEffect(() => {
+    const priorityOrders = async () => {
+      const response = await axios.get("/api/get-priority-orders");
+      setPriorityOrders(response.data);
+    };
+    priorityOrders();
+  }, [isSuccess]);
+
+  useEffect(() => {
+    const getNotitications = async () => {
+      const response = await axios.get(`/api/manufacturer?user=${userAddress}`);
+      setNotification(response.data);
+    };
+    getNotitications();
+  }, [isSuccess]);
 
   const handleGetRawMaterial = async () => {
     console.log(orderToRetailer);
