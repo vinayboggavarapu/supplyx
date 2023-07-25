@@ -25,13 +25,18 @@ import {
   darkTheme,
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { polygonZkEvmTestnet } from "wagmi/chains";
+import { sepolia } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import { StateProvider } from "@/context/states";
 const { chains, publicClient } = configureChains(
-  [polygonZkEvmTestnet],
-  [alchemyProvider({ apiKey: process.env.ALCHEMY_ID }), publicProvider()]
+  [sepolia],
+  [
+    alchemyProvider({ apiKey: `${process.env.NEXT_PUBLIC_ALCHEMY_ID}` }),
+    publicProvider(),
+  ]
 );
+
 const connectors = connectorsForWallets([
   {
     groupName: "Recommended",
@@ -61,7 +66,7 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <WagmiConfig config={wagmiConfig}>
           <RainbowKitProvider chains={chains} theme={myTheme}>
-            {children}
+            <StateProvider>{children}</StateProvider>
           </RainbowKitProvider>
         </WagmiConfig>
       </body>

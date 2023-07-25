@@ -8,7 +8,14 @@ export async function POST(req, res) {
 
   const body = await req.json();
 
-  const { userName, walletAddress, transactionId, orderId, productName } = body;
+  const {
+    userName,
+    walletAddress,
+    transactionId,
+    orderId,
+    productName,
+    manufacturer,
+  } = body;
 
   //   if (!userName || !authorEmail || !postTitle || !postBody || !postSlug) {
   //     return new Response(400).json({ error: "Missing information" });
@@ -21,6 +28,7 @@ export async function POST(req, res) {
       transactionId,
       orderId,
       productName,
+      manufacturer,
     });
     return new Response(JSON.stringify(newPost));
   } catch (error) {

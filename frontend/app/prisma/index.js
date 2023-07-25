@@ -8,6 +8,7 @@ export const createProduct = async ({
   transactionId,
   orderId,
   productName,
+  manufacturer,
 }) => {
   const product = await prisma.orders.create({
     data: {
@@ -16,13 +17,38 @@ export const createProduct = async ({
       transactionId: transactionId,
       orderId: orderId,
       productName: productName,
+      manufacturer: manufacturer,
     },
   });
   return product;
 };
 
 export const getOrders = async () => {
-  const orders = await prisma.orders.findMany();
+  const orders = await prisma.orders.findMany({
+    where: {
+      isShopfloor: false,
+      isPriority: false,
+    },
+  });
+  return orders;
+};
+
+export const getPriorityOrders = async () => {
+  const orders = await prisma.orders.findMany({
+    where: {
+      isShopfloor: false,
+      isPriority: true,
+    },
+  });
+  return orders;
+};
+
+export const getShopFloorOrders = async () => {
+  const orders = await prisma.orders.findMany({
+    where: {
+      isShopfloor: true,
+    },
+  });
   return orders;
 };
 
@@ -66,4 +92,50 @@ export const editPriority = async ({ id }) => {
   });
 
   return editResponse;
+};
+
+export const getNotifications = async ({ user }) => {
+  const nofification = await prisma.notifications.findMany({
+    where: {
+      manufacturer: user,
+    },
+  });
+  return nofification;
+};
+
+export const createNotification = async ({
+  manufacturer,
+  retailer,
+  eventName,
+  orderId,
+}) => {
+  const notification = await prisma.notifications.create({
+    data: {
+      manufacturer: manufacturer,
+      retailer: retailer,
+      eventName: eventName,
+    },
+  });
+  return notification;
+};
+
+export const deleteNotification = async ({ id }) => {
+  const deleteResponse = await prisma.notifications.delete({
+    where: {
+      id: id,
+    },
+  });
+  return deleteResponse;
+};
+
+export const setShopFloor = async ({ id }) => {
+  const shopFloor = await prisma.orders.update({
+    where: {
+      id: id,
+    },
+    data: {
+      isShopfloor: true,
+    },
+  });
+  return shopFloor;
 };

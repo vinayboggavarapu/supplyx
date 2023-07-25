@@ -17,6 +17,7 @@
     "autoprefixer": "10.4.14",
     "class-variance-authority": "^0.6.1",
     "clsx": "^1.2.1",
+    "create-next-app": "^13.4.12",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",
     "locomotive-scroll": "^4.1.4",

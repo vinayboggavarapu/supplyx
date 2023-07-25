@@ -13,217 +13,401 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Accordion } from "@radix-ui/react-accordion";
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-// const preorders = [
-//   {
-//     name: "UserVintu",
-//     address: "0x123456789",
-//     tx: "0xxxcvvvvvvfff",
-//     orderid: "KVSP123",
-//   },
-//   {
-//     name: "UserVintu",
-//     address: "0x123456789",
-//     tx: "0xxxcvvvvvvfff",
-//     orderid: "KVSP123",
-//   },
-//   {
-//     name: "UserVintu",
-//     address: "0x123456789",
-//     tx: "0xxxcvvvvvvfff",
-//     orderid: "KVSP123",
-//   },
-//   {
-//     name: "UserVintu",
-//     address: "0x123456789",
-//     tx: "0xxxcvvvvvvfff",
-//     orderid: "KVSP123",
-//   },
-//   {
-//     name: "UserVintu",
-//     address: "0x123456789",
-//     tx: "0xxxcvvvvvvfff",
-//     orderid: "KVSP123",
-//   },
-//   {
-//     name: "UserVintu",
-//     address: "0x123456789",
-//     tx: "0xxxcvvvvvvfff",
-//     orderid: "KVSP123",
-//   },
-// ];
+import { useAccount, useContractRead, useContractWrite } from "wagmi";
+import abi, { contractAddress } from "@/Abi";
+import { watchContractEvent } from "@wagmi/core";
+import StateContext from "@/context/states";
 
 const Page = () => {
   const [preorders, setPreorders] = useState([]);
-  const countDownTimeInMinutes = 2;
-  const [time, setTime] = useState(
-    Date.now() + countDownTimeInMinutes * 60 * 1000
-  );
+
+  const [shopFloorOrders, setShopFloorOrders] = useState([]);
+
+  const [priorityOrders, setPriorityOrders] = useState([]);
+
+  const [retailers, setRetailers] = useState("Select retailer");
+
+  const { notification, setNotification } = useContext(StateContext);
+
+  const address = useAccount();
+
+  const userAddress = address.address;
+
+  const { data: isManufacturer } = useContractRead({
+    address: contractAddress,
+    abi: abi,
+    functionName: "isManufacturer",
+    args: [userAddress],
+  });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTime((previousTime) => previousTime - 1000);
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
+    const getNotitications = async () => {
+      const response = await fetch(`/api/manufacturer?user=${userAddress}`);
+      const data = await response.json();
+      setNotification(data);
     };
+    getNotitications();
+  }, []);
+
+  const { data: getRetailers } = useContractRead({
+    address: contractAddress,
+    abi: abi,
+    functionName: "getRetailers",
+    overrides: { from: userAddress },
+  });
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const [orderToRetailer, setOrderToRetailer] = useState({
+    preOrderId: "",
+    retailerAddress: "",
+    preOrderUserAddress: "",
+  });
+
+  const [selectedRetailer, setSelectedRetailer] = useState("");
+
+  useEffect(() => {
+    const Orders = async () => {
+      const response = await fetch("/api/get-all-orders");
+      const data = await response.json();
+      setPreorders(data);
+    };
+    Orders();
   }, []);
 
   useEffect(() => {
-    const getData = async () => {
-      const ordersData = await fetch("/api/details");
-      const orders = await ordersData.json();
-      setPreorders(orders);
+    const shopFloorOrders = async () => {
+      const response = await fetch("/api/get-shopfloor-orders");
+      const data = await response.json();
+      setShopFloorOrders(data);
     };
-    getData();
+    shopFloorOrders();
   }, []);
 
-  const minutes = Math.max(Math.floor((time - Date.now()) / (1000 * 60)), 0);
-  const seconds = Math.max(Math.floor((time - Date.now()) / 1000) % 60, 0);
+  useEffect(() => {
+    const priorityOrders = async () => {
+      const response = await fetch("/api/get-priority-orders");
+      const data = await response.json();
+      setPriorityOrders(data);
+    };
+    priorityOrders();
+  }, []);
+
+  const { write: orderRawMaterial } = useContractWrite({
+    address: contractAddress,
+    abi: abi,
+    functionName: "addPreOrderCountForRetailer",
+    args: [
+      orderToRetailer.preOrderId,
+      orderToRetailer.retailerAddress,
+      orderToRetailer.preOrderUserAddress,
+    ],
+    overrides: { from: userAddress },
+  });
+
+  const handleGetRawMaterial = async () => {
+    console.log(orderToRetailer);
+    orderRawMaterial();
+  };
 
   return (
-    <Layout header={"Manufacturer"}>
-      <div className="p-7">
-        <Tabs defaultValue="regular">
-          <div className="flex justify-between">
-            <TabsList className="grid w-1/4 grid-cols-3 border-b ">
-              <TabsTrigger
-                value="regular"
-                className="tabs-active-style tabs-inactive-style rounded-md"
-              >
-                Regular
-              </TabsTrigger>
-              <TabsTrigger
-                className="tabs-active-style tabs-inactive-style"
-                value="priority"
-              >
-                High Priority
-              </TabsTrigger>
-              <TabsTrigger
-                className="tabs-active-style tabs-inactive-style"
-                value="progress"
-              >
-                Shopfloor
-              </TabsTrigger>
-            </TabsList>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="border-none rounded-[10px] focus:border-none outline-none bg-[#D9D9D9] text-black px-4">
-                  Product Category
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 rounded-[10px] bg-black">
-                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem className="dropdown-items-style">
-                    Ralley
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="dropdown-items-style">
-                    Ralley Y2
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="dropdown-items-style">
-                    Monster
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-              </DropdownMenuContent>
-            </DropdownMenu>
+    isClient && (
+      <Layout header={"Manufacturer"}>
+        {isManufacturer ? (
+          <div className="p-7">
+            <Tabs defaultValue="regular">
+              <div className="flex justify-between">
+                <TabsList className="grid w-1/4 grid-cols-3 border-b ">
+                  <TabsTrigger
+                    value="regular"
+                    className="tabs-active-style tabs-inactive-style rounded-md"
+                  >
+                    Regular
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className="tabs-active-style tabs-inactive-style"
+                    value="priority"
+                  >
+                    High Priority
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className="tabs-active-style tabs-inactive-style"
+                    value="shopfloor"
+                  >
+                    Shopfloor
+                  </TabsTrigger>
+                </TabsList>
+                {/* <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="border-none rounded-[10px] focus:border-none outline-none bg-[#D9D9D9] text-black px-4">
+                      Product Category
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 rounded-[10px] bg-black">
+                    <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem className="dropdown-items-style">
+                        Ralley
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="dropdown-items-style">
+                        Ralley Y2
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="dropdown-items-style">
+                        Monster
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                  </DropdownMenuContent>
+                </DropdownMenu> */}
+              </div>
+              <TabsContent value="regular">
+                <div className="flex items-center justify-between h-[9.3rem]">
+                  <h2 className="mt-7 mb-7">Orders from the users</h2>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button>{retailers}</button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-[100%] text-sm bg-white text-black">
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup
+                        value={retailers}
+                        onValueChange={(value) => {
+                          setRetailers(value);
+                          setSelectedRetailer(value);
+                          console.log(selectedRetailer);
+                          // setManufacturer(value);
+                          // setDropDownLabel("Selected Manufacturer");
+                          // setSelectedManufacturer(value);
+                        }}
+                      >
+                        {getRetailers?.map((data) => (
+                          <DropdownMenuRadioItem key={data} value={data}>
+                            {data}
+                          </DropdownMenuRadioItem>
+                        ))}
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <Table>
+                  <TableHeader>
+                    <TableRow className="text-[#E5F9B4] text-[1.1rem]">
+                      <TableHead>User</TableHead>
+                      <TableHead>Address</TableHead>
+                      {/* <TableHead>tx</TableHead> */}
+                      <TableHead>Product</TableHead>
+                      <TableHead className="text-right">orderId</TableHead>
+                      <TableHead className="text-right">Status</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {preorders.map((preorder, index) => (
+                      <TableRow key={index} className="border-b-gray-500">
+                        <TableCell className="font-medium">
+                          {preorder.name}
+                        </TableCell>
+                        <TableCell>{preorder.address}</TableCell>
+                        {/* <TableCell>{preorder.transactionId}</TableCell> */}
+                        <TableCell>{preorder.productName}</TableCell>
+                        <TableCell className="text-right">
+                          {preorder.id}
+                        </TableCell>
+                        <TableCell className="text-right">Pending</TableCell>
+                        <TableCell className="text-right">
+                          <button
+                            onClick={() => {
+                              setOrderToRetailer({
+                                preOrderId: preorder.id,
+                                retailerAddress: selectedRetailer,
+                                preOrderUserAddress: preorder.address,
+                              });
+                              console.log(orderToRetailer);
+                              handleGetRawMaterial();
+                            }}
+                            className="bg-[#E5F9B4] text-black font-semibold p-2 rounded-full"
+                          >
+                            Get Material
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+
+              <TabsContent value="priority">
+                <div className="flex items-center justify-between h-[9.3rem]">
+                  <h2 className="mt-7 mb-7">Orders from the users</h2>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button>{retailers}</button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-[100%] text-sm bg-white text-black">
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup
+                        value={retailers}
+                        onValueChange={(value) => {
+                          setRetailers(value);
+                          setSelectedRetailer(value);
+                          console.log(selectedRetailer);
+                          // setManufacturer(value);
+                          // setDropDownLabel("Selected Manufacturer");
+                          // setSelectedManufacturer(value);
+                        }}
+                      >
+                        {getRetailers?.map((data) => (
+                          <DropdownMenuRadioItem key={data} value={data}>
+                            {data}
+                          </DropdownMenuRadioItem>
+                        ))}
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <Table>
+                  <TableHeader>
+                    <TableRow className="text-[#E5F9B4] text-[1.1rem]">
+                      <TableHead>User</TableHead>
+                      <TableHead>Address</TableHead>
+                      {/* <TableHead>tx</TableHead> */}
+                      <TableHead>Product</TableHead>
+                      <TableHead className="text-right">orderId</TableHead>
+                      <TableHead className="text-right">Status</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {priorityOrders.map((preorder, index) => (
+                      <TableRow key={index} className="border-b-gray-500">
+                        <TableCell className="font-medium">
+                          {preorder.name}
+                        </TableCell>
+                        <TableCell>{preorder.address}</TableCell>
+                        {/* <TableCell>{preorder.transactionId}</TableCell> */}
+                        <TableCell>{preorder.productName}</TableCell>
+                        <TableCell className="text-right">
+                          {preorder.id}
+                        </TableCell>
+                        <TableCell className="text-right">Pending</TableCell>
+                        <TableCell className="text-right">
+                          <button
+                            onClick={() => {
+                              setOrderToRetailer({
+                                preOrderId: preorder.id,
+                                retailerAddress: selectedRetailer,
+                                preOrderUserAddress: preorder.address,
+                              });
+                              console.log(orderToRetailer);
+                              handleGetRawMaterial();
+                            }}
+                            className="bg-[#E5F9B4] text-black font-semibold p-2 rounded-full"
+                          >
+                            Get Material
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+
+              <TabsContent value="shopfloor">
+                <div className="flex items-center justify-between h-[9.3rem]">
+                  <h2 className="mt-7 mb-7">Orders from the users</h2>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button>{retailers}</button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-[100%] text-sm bg-white text-black">
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup
+                        value={retailers}
+                        onValueChange={(value) => {
+                          setRetailers(value);
+                          setSelectedRetailer(value);
+                          console.log(selectedRetailer);
+                          // setManufacturer(value);
+                          // setDropDownLabel("Selected Manufacturer");
+                          // setSelectedManufacturer(value);
+                        }}
+                      >
+                        {shopFloorOrders?.map((data) => (
+                          <DropdownMenuRadioItem key={data} value={data}>
+                            {data}
+                          </DropdownMenuRadioItem>
+                        ))}
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <Table>
+                  <TableHeader>
+                    <TableRow className="text-[#E5F9B4] text-[1.1rem]">
+                      <TableHead>User</TableHead>
+                      <TableHead>Address</TableHead>
+                      {/* <TableHead>tx</TableHead> */}
+                      <TableHead>Product</TableHead>
+                      <TableHead className="text-right">orderId</TableHead>
+                      {/* <TableHead className="text-right">Status</TableHead>
+                      <TableHead className="text-right">Action</TableHead> */}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {shopFloorOrders.map((preorder, index) => (
+                      <TableRow key={index} className="border-b-gray-500">
+                        <TableCell className="font-medium">
+                          {preorder.name}
+                        </TableCell>
+                        <TableCell>{preorder.address}</TableCell>
+                        {/* <TableCell>{preorder.transactionId}</TableCell> */}
+                        <TableCell>{preorder.productName}</TableCell>
+                        <TableCell className="text-right">
+                          {preorder.id}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+            </Tabs>
           </div>
-          <TabsContent value="regular">
-            <div className="flex items-center justify-between h-[9.3rem]">
-              <h2 className="mt-7 mb-7">Orders from the users</h2>
-
-              <Accordion type="single" collapsible className="w-2/5">
-                <AccordionItem value="item-1">
-                  <AccordionTrigger>Timer left</AccordionTrigger>
-                  <AccordionContent>
-                    <h2 className="mt-7 mb-7">
-                      <span className="text-[#f9f4b4]">
-                        Timer to trigger bulk order :
-                      </span>{" "}
-                      {minutes} minute {seconds} seconds
-                    </h2>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-
-            <Table>
-              <TableHeader>
-                <TableRow className="text-[#E5F9B4] text-[1.1rem]">
-                  <TableHead>User</TableHead>
-                  <TableHead>Address</TableHead>
-                  <TableHead>tx</TableHead>
-                  <TableHead className="text-right">orderId</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {preorders.map((preorder, index) => (
-                  <TableRow key={index} className="border-b-gray-500">
-                    <TableCell className="font-medium">
-                      {preorder.name}
-                    </TableCell>
-                    <TableCell>{preorder.address}</TableCell>
-                    <TableCell>{preorder.transactionId}</TableCell>
-                    <TableCell className="text-right">
-                      {preorder.orderId}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabsContent>
-          <TabsContent value="priority">
-            <h2 className="mt-7 mb-7">High Priority Orders</h2>
-            <Table>
-              <TableHeader>
-                <TableRow className="text-[#E5F9B4] text-[1.1rem]">
-                  <TableHead>User</TableHead>
-                  <TableHead>Address</TableHead>
-                  <TableHead>tx</TableHead>
-                  <TableHead className="text-right">orderId</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {preorders.map((preorder, index) => (
-                  <TableRow key={index} className="border-b-gray-500">
-                    <TableCell className="font-medium">
-                      {preorder.name}
-                    </TableCell>
-                    <TableCell>{preorder.tx}</TableCell>
-                    <TableCell>{preorder.orderid}</TableCell>
-                    <TableCell className="text-right">
-                      {preorder.address}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </Layout>
+        ) : (
+          <div className="flex flex-col gap-5">
+            <h2 className="text-2xl">All orders from users can be seen here</h2>
+            <p className="text-[#E5F9B4] text-xl">
+              You are not a registered manufacturer
+            </p>
+          </div>
+        )}
+      </Layout>
+    )
   );
 };
 

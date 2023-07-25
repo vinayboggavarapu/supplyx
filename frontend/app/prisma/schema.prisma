@@ -17,13 +17,15 @@ model Orders {
   transactionId String
   orderId       String
   productName   String
+  manufacturer  String
+  rawMaterial   Boolean @default(false)
+  isShopfloor   Boolean @default(false)
   isPriority    Boolean @default(false)
 }
 
-// Address is an embedded document
-type Address {
-  street String
-  city   String
-  state  String
-  zip    String
+model Notifications {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  manufacturer String
+  retailer     String
+  eventName    String
 }
